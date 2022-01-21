@@ -4,7 +4,9 @@ import tkinter as tk
 # import matplotlib.pyplot as plt
 from tkinter import ttk
 from tkinter import filedialog as fd
+import methods as methods
 from math import *
+
 
 
 class RootCalculator:
@@ -26,7 +28,9 @@ class RootCalculator:
         self.labels = []
         self.equalLabels = []
         self.equalEntries = []
-        self.solveButton = ttk.Button(self.tableFrame, text="Solve")
+        self.degreeClicked = tk.StringVar()
+        self.resultLabel = ttk.Label(self.tableFrame)
+        self.solveButton = ttk.Button(self.tableFrame, text="Solve", command=lambda:self.gauss_elimination(int(self.degreeClicked.get())))
         # self.createButton(2)
         self.createMethodSelector()
 
@@ -34,7 +38,7 @@ class RootCalculator:
         self.degreeLabel = ttk.Label(self.methodFrame, text="Degree")
         self.degreeLabel.grid(row=0, column=0)
         self.degreeOptions = ["1", "2", "3", "4", "5"]
-        self.degreeClicked = tk.StringVar()
+
         self.degreeClicked.set(self.degreeOptions[0])
         self.degreeSelect = tk.OptionMenu(self.methodFrame, self.degreeClicked, *self.degreeOptions)
         self.degreeSelect.grid(row=0, column=1, padx=10, pady=5)
@@ -102,12 +106,28 @@ class RootCalculator:
                     flag = 0
             self.equalLabel = ttk.Label(self.tableFrame, text="=")
             self.equalLabel.grid(row=i, column=j + 1, padx=5, pady=5)
-            self.equalLabels.append(self.equalLabel)
+            self.labels.append(self.equalLabel)
             self.equalEntry = ttk.Entry(self.tableFrame, width=10)
             self.equalEntry.grid(row=i, column=j + 2, padx=5, pady=5)
-            self.equalEntries.append(self.equalEntry)
+            self.entries.append(self.equalEntry)
 
         self.solveButton.grid(row=i + 1, column=0, columnspan=20, padx=5, pady=5, sticky=tk.W + tk.E)
+
+    def gauss_elimination(self, n):
+        entriesList = []
+        for i in range(len(self.entries)):
+            entriesList.append(self.entries[i].get())
+        x = methods.gauss_elimination(entriesList, n)
+
+        # Displaying solution
+        print('\nRequired solution is: ')
+        resultString = " "
+        for i in range(n):
+            resultString += 'X%d = %0.2f' % (i, x[i]) + '\t'
+            # print('X%d = %0.2f' % (i, x[i]), end='\t')
+        self.resultLabel['text'] = resultString
+        self.resultLabel.grid(row=20, column=0)
+
 
     def changeEntry(self, *args):
         if self.clicked.get() == "Fixed Point" or self.clicked.get() == "Newton Raphson":
@@ -155,57 +175,6 @@ class RootCalculator:
         else:
             self.functionEntry.insert(0, "Error Reading File")
         file.close()
-
-    def buttonCalculate(self):
-        # plt.close("all")
-        # self.errorLabel['text'] = ""
-        # self.errorLabel.grid_forget()
-        self.input = self.functionEntry.get()
-        # try:
-        #     answer = root_finder.selectMethod(str(self.clicked.get()), str(self.input),
-        #                                       float(self.lowerBoundEntry.get()), float(self.upperBoundEntry.get()),
-        #                                       float(self.toleranceEntry.get()), int(self.maxIterationsEntry.get()),
-        #                                       int(self.singleMode.get()))
-        #     method_chosen = str(self.clicked.get())
-        #     if type(answer) != str:
-        #         if method_chosen == "Bisection" or method_chosen == "False-Position":
-        #             self.createTable(answer)
-        #         elif method_chosen == "Newton Raphson":
-        #             self.newtonRaphsonTable(answer)
-        #         elif method_chosen == "Secant":
-        #             self.secantTable(answer)
-        #         elif method_chosen == "Fixed Point":
-        #             self.fixedPointTable(answer)
-        #     else:
-        #         self.executionTimeLabel['text'] = ""
-        #         self.resultLabel['text'] = ""
-        #         for item in self.iterationsTable.get_children():
-        #             self.iterationsTable.delete(item)
-        #         self.errorString = answer
-        #         self.errorLabel['text'] = self.errorString
-        #         self.errorLabel.pack(padx=20, pady=(20, 0))
-        # except Exception as e:
-        #     if "zero" in str(e):
-        #         self.errorLabel['text'] = "Error: Division by Zero !"
-        #     elif "float" in str(e):
-        #         self.errorLabel['text'] = "Error: Field Left Empty !"
-        #     elif "invalid" in str(e):
-        #         self.errorLabel['text'] = "Error: Invalid Input"
-        #     else:
-        #         self.errorLabel['text'] = str(e)
-        #     self.executionTimeLabel.pack_forget()
-        #     self.resultLabel.pack_forget()
-        #     self.iterationsTable.pack_forget()
-        #     self.errorLabel.pack(padx=20, pady=(20, 0))
-
-    # def func(self, x):
-    #     expression = self.input.replace("^", "**")
-    #     expression = expression.replace("cos", "np.cos")
-    #     expression = expression.replace("sin", "np.sin")
-    #     expression = expression.replace("tan", "np.tan")
-    #     expression = expression.replace("ln", "np.log")
-    #     expression = expression.replace("exp", "np.exp")
-    #     return eval(expression)
 
 
 root = tk.Tk()
