@@ -26,11 +26,9 @@ class RootCalculator:
         # self.errorLabel = ttk.Label(self.tableFrame)
         self.entries = []
         self.labels = []
-        self.equalLabels = []
-        self.equalEntries = []
         self.degreeClicked = tk.StringVar()
         self.resultLabel = ttk.Label(self.tableFrame)
-        self.solveButton = ttk.Button(self.tableFrame, text="Solve", command=lambda:self.gauss_elimination(int(self.degreeClicked.get())))
+        self.solveButton = ttk.Button(self.tableFrame, text="Solve", command=lambda:self.solve(int(self.degreeClicked.get())))
         # self.createButton(2)
         self.createMethodSelector()
 
@@ -46,7 +44,7 @@ class RootCalculator:
 
         self.methodLabel = ttk.Label(self.methodFrame, text="Method")
         self.methodLabel.grid(row=0, column=2)
-        self.options = ["Gaussian-elimination", "LU decomposition", "Gaussian-Jordan", "Gauss-Seidel"]
+        self.options = ["Gaussian-Elimination", "LU decomposition", "Gaussian-Jordan", "Gauss-Seidel"]
         self.clicked = tk.StringVar()
         self.clicked.set(self.options[0])
         # self.clicked.trace("w", self.changeEntry)
@@ -81,14 +79,8 @@ class RootCalculator:
             entry.grid_forget()
         for label in self.labels:
             label.grid_forget()
-        for equalLabel in self.equalLabels:
-            equalLabel.grid_forget()
-        for equalEntry in self.equalEntries:
-            equalEntry.grid_forget()
         self.entries.clear()
         self.labels.clear()
-        self.equalLabels.clear()
-        self.equalEntries.clear()
         self.solveButton.grid_forget()
 
         for i in range(int(self.degreeClicked.get())):
@@ -113,17 +105,19 @@ class RootCalculator:
 
         self.solveButton.grid(row=i + 1, column=0, columnspan=20, padx=5, pady=5, sticky=tk.W + tk.E)
 
-    def gauss_elimination(self, n):
+    def solve(self, n):
         entriesList = []
         for i in range(len(self.entries)):
             entriesList.append(self.entries[i].get())
-        x = methods.gauss_elimination(entriesList, n)
 
+        x = methods.selectMethod(self.clicked.get(), entriesList, n, float(self.toleranceEntry.get()), int(self.maxIterationsEntry.get()))
+
+        # print(x)
         # Displaying solution
         print('\nRequired solution is: ')
         resultString = " "
         for i in range(n):
-            resultString += 'X%d = %0.2f' % (i, x[i]) + '\t'
+            resultString += 'x%d = %0.4f' % (i, x[i]) + '\t'
             # print('X%d = %0.2f' % (i, x[i]), end='\t')
         self.resultLabel['text'] = resultString
         self.resultLabel.grid(row=20, column=0)
