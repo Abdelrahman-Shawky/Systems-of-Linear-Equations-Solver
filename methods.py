@@ -3,10 +3,48 @@ import sys
 
 
 def selectMethod(method_name, entries, n, tol=0.00001, max_iterations=50):
-    if method_name == "Gauss-Elimination":
+    if method_name == "Gaussian-Elimination":
         return gauss_elimination(entries,n)
     elif method_name == "Gauss-Seidel":
         return gauss_seidel(entries, n, tol, max_iterations)
+    elif method_name == "Gaussian-Jordan":
+        return gauss_jordan(entries, n)
+
+
+def gauss_jordan(entries, n):
+    print(entries)
+    # Making numpy array of n x n+1 size and initializing
+    # to zero for storing augmented matrix
+    a = np.zeros((n, n + 1))
+    # Making numpy array of n size and initializing
+    # to zero for storing solution vector
+    x = np.zeros(n)
+    k = 0
+
+    # Convert entries to input array
+    for i in range(n):
+        for j in range(n + 1):
+            a[i][j] = float(entries[k])
+            k += 1
+
+    # Applying Gauss Jordan Elimination
+    for i in range(n):
+        if a[i][i] == 0.0:
+            sys.exit('Divide by zero detected!')
+
+        for j in range(n):
+            if i != j:
+                ratio = a[j][i] / a[i][i]
+
+                for k in range(n + 1):
+                    a[j][k] = a[j][k] - ratio * a[i][k]
+
+    # Obtaining Solution
+    for i in range(n):
+        x[i] = a[i][n] / a[i][i]
+
+    return x
+
 
 
 def gauss_seidel(entries, n, tol, max_iterations):
