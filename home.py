@@ -44,7 +44,7 @@ class RootCalculator:
 
         self.methodLabel = ttk.Label(self.methodFrame, text="Method")
         self.methodLabel.grid(row=0, column=2)
-        self.options = ["Gaussian-Elimination", "LU decomposition", "Gaussian-Jordan", "Gauss-Seidel"]
+        self.options = ["Gaussian-Elimination", "LU Decomposition", "Gaussian-Jordan", "Gauss-Seidel"]
         self.clicked = tk.StringVar()
         self.clicked.set(self.options[0])
         # self.clicked.trace("w", self.changeEntry)

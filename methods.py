@@ -1,5 +1,9 @@
+import pprint
+
 import numpy as np
 import sys
+import scipy
+import scipy.linalg
 
 
 def selectMethod(method_name, entries, n, tol=0.00001, max_iterations=50):
@@ -9,6 +13,45 @@ def selectMethod(method_name, entries, n, tol=0.00001, max_iterations=50):
         return gauss_seidel(entries, n, tol, max_iterations)
     elif method_name == "Gaussian-Jordan":
         return gauss_jordan(entries, n)
+    elif method_name == "LU Decomposition":
+        return LU_decomposition(entries, n)
+
+
+def LU_decomposition(entries, n):
+    print(entries)
+    # Making numpy array of n x n+1 size and initializing
+    # to zero for storing augmented matrix
+    a = np.zeros((n, n + 1))
+    # Making numpy array of n size and initializing
+    # to zero for storing solution vector
+    x = np.zeros(n)
+    k = 0
+
+    # Convert entries to input array
+    for i in range(n):
+        for j in range(n + 1):
+            a[i][j] = float(entries[k])
+            k += 1
+
+    P, L, U = scipy.linalg.lu(a)
+    pprint.pprint(a)
+    pprint.pprint(P)
+    pprint.pprint(L)
+    pprint.pprint(U)
+
+    for i in range(n-1, -1, -1):
+        print(i)
+        x[i] = U[i][n]
+        if i == (n - 1):
+            x[i] /= U[i][n-1]
+        else:
+            for k in range(n-1, i, -1):
+                x[i] -= U[i][k] * x[k]
+            x[i] /= U[i][i]
+            print(x[i])
+
+    pprint.pprint(x)
+    return x
 
 
 def gauss_jordan(entries, n):
