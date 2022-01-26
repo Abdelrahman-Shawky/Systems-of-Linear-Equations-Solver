@@ -1,16 +1,16 @@
 import pprint
-
 import numpy as np
+import time
 import sys
 import scipy
 import scipy.linalg
 
 
-def selectMethod(method_name, entries, n, tol=0.00001, max_iterations=50):
+def selectMethod(method_name, entries, n, initial, tol=0.00001, max_iterations=50):
     if method_name == "Gaussian-Elimination":
         return gauss_elimination(entries,n)
     elif method_name == "Gauss-Seidel":
-        return gauss_seidel(entries, n, tol, max_iterations)
+        return gauss_seidel(entries, n, tol, max_iterations, initial)
     elif method_name == "Gaussian-Jordan":
         return gauss_jordan(entries, n)
     elif method_name == "LU Decomposition":
@@ -33,6 +33,7 @@ def LU_decomposition(entries, n):
             a[i][j] = float(entries[k])
             k += 1
 
+    start_time = time.time()
     P, L, U = scipy.linalg.lu(a)
     pprint.pprint(a)
     pprint.pprint(P)
@@ -50,8 +51,14 @@ def LU_decomposition(entries, n):
             x[i] /= U[i][i]
             print(x[i])
 
+    execution_time = time.time() - start_time
+    dictionary = dict()
+    dictionary['execution_time'] = str(execution_time)
+    dictionary['result'] = x
+
+
     pprint.pprint(x)
-    return x
+    return dictionary
 
 
 def gauss_jordan(entries, n):
@@ -70,6 +77,7 @@ def gauss_jordan(entries, n):
             a[i][j] = float(entries[k])
             k += 1
 
+    start_time = time.time()
     # Applying Gauss Jordan Elimination
     for i in range(n):
         if a[i][i] == 0.0:
@@ -86,11 +94,14 @@ def gauss_jordan(entries, n):
     for i in range(n):
         x[i] = a[i][n] / a[i][i]
 
-    return x
+    execution_time = time.time() - start_time
+    dictionary = dict()
+    dictionary['execution_time'] = str(execution_time)
+    dictionary['result'] = x
+    return dictionary
 
 
-
-def gauss_seidel(entries, n, tol, max_iterations):
+def gauss_seidel(entries, n, tol, max_iterations, initial):
     print(entries)
     # Making numpy array of n x n+1 size and initializing
     # to zero for storing augmented matrix
@@ -101,6 +112,8 @@ def gauss_seidel(entries, n, tol, max_iterations):
     y0 = 0
     z0 = 0
     current = np.zeros(n)
+    for i in range(n):
+        current[i] = float(initial[i])
     errors = np.zeros(n)
     count = 1
     # Convert entries to input array
@@ -111,12 +124,11 @@ def gauss_seidel(entries, n, tol, max_iterations):
 
     condition = True
 
+    start_time = time.time()
     while condition:
-        # x1 = (a[0][n] - a[0][1]*y0 - a[0][2]*z0)/a[0][0]
-        # y1 = (a[1][n] - a[1][0]*x1 - a[1][2]*z0)/a[1][1]
-        # z1 = (a[2][n] - a[2][0]*x1 - a[2][1]*y1)/a[2][2]
-
         for i in range(n):
+            if a[i][i] == 0.0:
+                sys.exit('Divide by zero detected!')
             x1 = a[i][n]
             for j in range(n):
                 if i == j:
@@ -126,31 +138,24 @@ def gauss_seidel(entries, n, tol, max_iterations):
             errors[i] = abs(current[i] - x1)
             current[i] = x1
 
-
-        print('%d\t%0.4f\t%0.4f\t%0.4f\n' % (count, current[0], current[1], current[2]))
-        # e1 = abs(x0 - x1)
-        # e2 = abs(y0 - y1)
-        # e3 = abs(z0 - z1)
-
         for i in range(n):
             if errors[i] < tol:
                 condition = False
 
         count += 1
-        # x0 = x1
-        # y0 = y1
-        # z0 = z1
-
         if count == max_iterations:
             break
-        # condition = e1 > tol and e2 > tol and e3 > tol
 
     x = np.zeros(n)
-    x[0] = x0
-    x[1] = y0
-    x[2] = z0
-    return current
+    # x[0] = x0
+    # x[1] = y0
+    # x[2] = z0
 
+    execution_time = time.time() - start_time
+    dictionary = dict()
+    dictionary['execution_time'] = str(execution_time)
+    dictionary['result'] = current
+    return dictionary
 
 
 def gauss_elimination(entries, n):
@@ -168,6 +173,7 @@ def gauss_elimination(entries, n):
                 a[i][j] = float(entries[k])
                 k += 1
 
+    start_time = time.time()
     # Applying Gauss Elimination
     for i in range(n):
         if a[i][i] == 0.0:
@@ -190,6 +196,10 @@ def gauss_elimination(entries, n):
 
         x[i] = x[i] / a[i][i]
 
-    return x
+    execution_time = time.time() - start_time
+    dictionary = dict()
+    dictionary['execution_time'] = str(execution_time)
+    dictionary['result'] = x
+    return dictionary
 
 
