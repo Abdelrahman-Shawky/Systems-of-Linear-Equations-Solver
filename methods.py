@@ -8,7 +8,7 @@ import scipy.linalg
 
 def selectMethod(method_name, entries, n, initial, tol=0.00001, max_iterations=50):
     if method_name == "Gaussian-Elimination":
-        return gauss_elimination(entries,n)
+        return gauss_elimination(entries, n)
     elif method_name == "Gauss-Seidel":
         return gauss_seidel(entries, n, tol, max_iterations, initial)
     elif method_name == "Gaussian-Jordan":
@@ -35,10 +35,10 @@ def LU_decomposition(entries, n):
 
     start_time = time.time()
     P, L, U = scipy.linalg.lu(a)
-    pprint.pprint(a)
-    pprint.pprint(P)
-    pprint.pprint(L)
-    pprint.pprint(U)
+    # pprint.pprint(a)
+    # pprint.pprint(P)
+    # pprint.pprint(L)
+    # pprint.pprint(U)
 
     for i in range(n-1, -1, -1):
         print(i)
@@ -56,13 +56,11 @@ def LU_decomposition(entries, n):
     dictionary['execution_time'] = str(execution_time)
     dictionary['result'] = x
 
-
-    pprint.pprint(x)
+    # pprint.pprint(x)
     return dictionary
 
 
 def gauss_jordan(entries, n):
-    print(entries)
     # Making numpy array of n x n+1 size and initializing
     # to zero for storing augmented matrix
     a = np.zeros((n, n + 1))
@@ -70,7 +68,6 @@ def gauss_jordan(entries, n):
     # to zero for storing solution vector
     x = np.zeros(n)
     k = 0
-
     # Convert entries to input array
     for i in range(n):
         for j in range(n + 1):
@@ -107,10 +104,7 @@ def gauss_seidel(entries, n, tol, max_iterations, initial):
     # to zero for storing augmented matrix
     a = np.zeros((n, n + 1))
     k = 0
-    # Initial zeroes
-    x0 = 0
-    y0 = 0
-    z0 = 0
+    # Initial
     current = np.zeros(n)
     for i in range(n):
         current[i] = float(initial[i])
@@ -123,7 +117,6 @@ def gauss_seidel(entries, n, tol, max_iterations, initial):
             k += 1
 
     condition = True
-
     start_time = time.time()
     while condition:
         for i in range(n):
@@ -145,11 +138,6 @@ def gauss_seidel(entries, n, tol, max_iterations, initial):
         count += 1
         if count == max_iterations:
             break
-
-    x = np.zeros(n)
-    # x[0] = x0
-    # x[1] = y0
-    # x[2] = z0
 
     execution_time = time.time() - start_time
     dictionary = dict()

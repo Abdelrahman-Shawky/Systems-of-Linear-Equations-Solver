@@ -131,9 +131,6 @@ class RootCalculator:
 
         result = methods.selectMethod(self.clicked.get(), entriesList, n, initialList, float(self.toleranceEntry.get()), int(self.maxIterationsEntry.get()))
         x = result['result']
-        # print(x)
-        # Displaying solution
-        print('\nRequired solution is: ')
         resultString = " "
         for i in range(n):
             resultString += 'x%d = %0.4f' % (i, x[i]) + '\t'
@@ -197,13 +194,14 @@ class RootCalculator:
             for x in initials:
                 current[count] = float(x)
                 count += 1
+            for i in range(numOfEquations):
+                self.initialPoints[i].insert(0, current[i])
 
         count = 0
         for i in range(numOfEquations):
             for j in range(numOfEquations + 1):
                 self.entries[count].insert(0, a[i][j])
                 count += 1
-
 
         print(current)
         pprint.pprint(a)
@@ -212,7 +210,7 @@ class RootCalculator:
 
 root = tk.Tk()
 root.title("Solving Linear Systems")
-root.geometry('1300x700')
+root.geometry('1000x500')
 s = ttk.Style()
 s.theme_use('xpnative')
 rootCalculator = RootCalculator(root)
